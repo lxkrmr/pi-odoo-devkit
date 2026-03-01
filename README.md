@@ -54,3 +54,13 @@ Credit/source for those helpers is documented directly in `skills/odoo-ui-check/
 ```bash
 ./scripts/smoke-test.sh
 ```
+
+## Local fail-fast git hook (recommended)
+
+Install once:
+
+```bash
+./scripts/install-git-hooks.sh
+```
+
+This enables a local `pre-commit` hook that runs the smoke test before each commit.
