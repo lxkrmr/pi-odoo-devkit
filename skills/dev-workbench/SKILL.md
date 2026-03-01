@@ -1,11 +1,11 @@
 ---
 name: dev-workbench
-description: Maintain a lean, shared working memory for iterative Odoo development (explore, plan, implement, validate, handoff) with the developer always in charge.
+description: Maintain a lean, shared working memory for iterative Odoo development and review work (outgoing/incoming) with the developer always in charge.
 ---
 
 # Dev Workbench
 
-Use this skill to keep one ticket/topic organized across long, non-linear implementation work.
+Use this skill to keep one ticket/topic organized across long, non-linear implementation or review work.
 
 ## Core Intent
 
@@ -13,6 +13,15 @@ Use this skill to keep one ticket/topic organized across long, non-linear implem
 - Keep work in small steps with explicit checkpoints.
 - Preserve decisions and rationale so sessions can restart cleanly.
 - Teach and enforce good engineering practice (Odoo-first, Python best practice, clarity over cleverness).
+
+## Work Modes
+
+Choose mode explicitly at start/resume:
+
+- **Outgoing**: building/changing our code.
+- **Incoming**: reviewing code from others (PR review support).
+
+For **incoming** mode, prefer using `odoo-pr-review` as the specialist checklist while keeping the same developer-in-charge rules from this skill.
 
 ## Operating Model (Mandatory)
 
@@ -125,7 +134,7 @@ Use phase labels as status markers (not commands):
 
 1. **Start/Resume**
    - Resolve root via `DEV_WORKBENCH_ROOT`; if missing, ask developer and persist locally.
-   - Confirm work item name with developer.
+   - Confirm work item name and mode (**outgoing**/**incoming**) with developer.
    - Create missing structure only after confirmation.
 
 2. **Capture**
@@ -143,7 +152,8 @@ Use phase labels as status markers (not commands):
 5. **Handoff + Close**
    - Prepare concise summary in `05-handoff.md`.
    - Remind developer to commit checkpoint(s).
-   - Work item is fully done only after prod deploy; then archive/remove per developer decision.
+   - **Outgoing:** work item is fully done only after prod deploy; then archive/remove per developer decision.
+   - **Incoming:** review support ends when the reviewer submits their decision (approve/request changes/comment). This is independent from merge. Clean up temporary review notes only after developer confirmation.
 
 ## Commit Discipline
 

@@ -9,6 +9,7 @@ This devkit currently exposes shared Odoo development skills, including:
 - `odoo-translate`
 - `odoo-ui-check`
 - `odoo-log-debug`
+- `odoo-pr-review`
 - `skill-authoring`
 
 The JS browser tooling used by the UI skill is vendored in:

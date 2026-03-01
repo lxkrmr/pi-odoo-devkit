@@ -100,6 +100,7 @@ Current shared skills in this devkit:
 - `local-db`
 - `odoo-addon-lifecycle`
 - `odoo-log-debug`
+- `odoo-pr-review`
 - `odoo-shell-debug`
 - `odoo-translate`
 - `odoo-ui-check`
