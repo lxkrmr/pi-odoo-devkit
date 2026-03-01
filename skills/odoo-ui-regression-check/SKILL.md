@@ -1,6 +1,6 @@
 ---
 name: odoo-ui-regression-check
-description: Reusable checklist for quick Odoo UI regression spot-checks in local ERP dev using browser-tools.
+description: Reusable checklist for quick Odoo UI regression spot-checks in local Odoo dev using browser-tools.
 ---
 
 # Odoo UI Regression Spot-Check (Template)
@@ -19,6 +19,7 @@ Use this as a lightweight, repeatable checklist when validating a UI change or b
 
 - Local stack running: `docker compose up -d`
 - Odoo reachable: `http://localhost:8069`
+- Browser-tools deps installed: `./bootstrap/install.sh --with-browser-tools --yes`
 - Browser CDP reachable: `curl -s http://localhost:9222/json/version`
 
 ## Step 1 — Define Check Matrix (before clicking)

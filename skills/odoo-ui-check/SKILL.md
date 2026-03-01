@@ -1,9 +1,9 @@
 ---
 name: odoo-ui-check
-description: Check local Odoo UI behavior in ERP dev using browser-tools with a safe, repeatable workflow (read-only by default).
+description: Check local Odoo UI behavior in Odoo dev using browser-tools with a safe, repeatable workflow (read-only by default).
 ---
 
-# Odoo UI Check (Local ERP)
+# Odoo UI Check (Local Odoo)
 
 _This skill follows `.pi/skills/_template/SKILL.md` conventions._
 
@@ -32,7 +32,11 @@ This skill builds on `browser-tools` and is focused on Odoo-specific checks.
    ```
 2. Ensure Odoo is reachable:
    - `http://localhost:8069`
-3. Ensure browser-tools CDP is reachable:
+3. Ensure browser-tools dependencies are installed (from devkit root):
+   ```bash
+   ./bootstrap/install.sh --with-browser-tools --yes
+   ```
+4. Ensure browser-tools CDP is reachable:
    ```bash
    curl -s http://localhost:9222/json/version
    ```

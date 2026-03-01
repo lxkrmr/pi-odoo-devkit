@@ -1,7 +1,55 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+resolve_script_dir() {
+  local src="${BASH_SOURCE[0]}"
+  while [ -h "$src" ]; do
+    local dir
+    dir="$(cd -P "$(dirname "$src")" && pwd)"
+    src="$(readlink "$src")"
+    [[ "$src" != /* ]] && src="$dir/$src"
+  done
+  cd -P "$(dirname "$src")" && pwd
+}
+
+SCRIPT_DIR="$(resolve_script_dir)"
+DEVKIT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+resolve_repo_root() {
+  local repo_path="${ODOO_REPO_PATH:-}"
+  if [ -n "$repo_path" ] && [ -f "$repo_path/docker-compose.yml" ]; then
+    cd "$repo_path" && pwd
+    return
+  fi
+
+  if [ -f "./docker-compose.yml" ]; then
+    pwd
+    return
+  fi
+
+  local start
+  start="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+  # Walk up to find docker-compose.yml
+  local cur="$start"
+  while [ "$cur" != "/" ]; do
+    if [ -f "$cur/docker-compose.yml" ]; then
+      echo "$cur"
+      return
+    fi
+    cur="$(dirname "$cur")"
+  done
+
+  echo ""
+}
+
+ROOT_DIR="$(resolve_repo_root)"
+if [ -z "$ROOT_DIR" ]; then
+  echo "Could not resolve Odoo project repo root." >&2
+  echo "Run from Odoo repo root or set ODOO_REPO_PATH=/path/to/odoo-project." >&2
+  exit 1
+fi
+
 cd "$ROOT_DIR"
 
 usage() {
@@ -9,12 +57,14 @@ usage() {
 Usage: .pi/tools/dev <command> [args...]
 
 Commands:
-  up [services...]          Start docker services (docker compose up -d)
-  db [psql args...]         Open psql using DB config from docker/odoo_*.conf
-  shell [db_name]           Start Odoo shell (--no-http) in odoo container
-  test [run-tests args...]  Run ./run-tests.sh with forwarded args
-  lint [pre-commit args...] Run pre-commit (defaults to run --all-files)
-  help                      Show this help
+  up [services...]             Start docker services (docker compose up -d)
+  db [psql args...]            Open psql using DB config from docker/odoo_*.conf
+  shell [db_name]              Start Odoo shell (--no-http) in odoo container
+  test [run-tests args...]     Run ./run-tests.sh with forwarded args
+  lint [pre-commit args...]    Run pre-commit (defaults to run --all-files)
+  doctor                       Run devkit bootstrap doctor checks
+  new-skill <name>             Scaffold a new skill from template
+  help                         Show this help
 
 Examples:
   .pi/tools/dev up
@@ -22,8 +72,10 @@ Examples:
   .pi/tools/dev db -c "SELECT COUNT(*) FROM res_partner;"
   .pi/tools/dev shell
   .pi/tools/dev shell postgres
-  .pi/tools/dev test -u philoro_products
+  .pi/tools/dev test -u my_addon
   .pi/tools/dev lint
+  .pi/tools/dev doctor
+  .pi/tools/dev new-skill odoo-my-workflow
 EOF
 }
 
@@ -89,6 +141,61 @@ cmd_lint() {
   fi
 }
 
+cmd_doctor() {
+  python3 "$DEVKIT_ROOT/bootstrap/doctor.py" "$ROOT_DIR"
+}
+
+cmd_new_skill() {
+  local name="${1:-}"
+  if [ -z "$name" ]; then
+    echo "Usage: .pi/tools/dev new-skill <skill-name>" >&2
+    return 1
+  fi
+
+  if [[ ! "$name" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+    echo "Invalid skill name '$name'. Use lowercase letters, numbers, and dashes." >&2
+    return 1
+  fi
+
+  local template target_dir target_file
+  template="$DEVKIT_ROOT/templates/SKILL.md"
+  target_dir="$DEVKIT_ROOT/skills/$name"
+  target_file="$target_dir/SKILL.md"
+
+  if [ ! -f "$template" ]; then
+    echo "Template not found: $template" >&2
+    return 1
+  fi
+
+  if [ -e "$target_file" ]; then
+    echo "Skill already exists: $target_file" >&2
+    return 1
+  fi
+
+  mkdir -p "$target_dir"
+  cp "$template" "$target_file"
+
+  # Fill minimal placeholders
+  python3 - "$target_file" "$name" <<'PY'
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+name = sys.argv[2]
+text = path.read_text(encoding='utf-8')
+text = text.replace('<skill-name>', name)
+text = text.replace('<one-line purpose>', f'Describe the purpose of {name}.')
+text = text.replace('<Skill Title>', name.replace('-', ' ').title())
+path.write_text(text, encoding='utf-8')
+PY
+
+  echo "Created skill scaffold: $target_file"
+  echo "Next steps:"
+  echo "1) Edit file and replace remaining placeholders"
+  echo "2) Add concrete steps + validation commands"
+  echo "3) Keep Credential Hygiene section"
+}
+
 cmd="${1:-help}"
 shift || true
 
@@ -98,6 +205,8 @@ case "$cmd" in
   shell) cmd_shell "$@" ;;
   test) cmd_test "$@" ;;
   lint) cmd_lint "$@" ;;
+  doctor) cmd_doctor "$@" ;;
+  new-skill) cmd_new_skill "$@" ;;
   help|-h|--help) usage ;;
   *)
     echo "Unknown command: $cmd" >&2

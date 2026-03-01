@@ -2,6 +2,9 @@
 
 This directory contains local project skills used by the coding agent.
 
+Note: `browser-tools` is an adapted third-party skill/code bundle.
+See `../THIRD_PARTY.md` for attribution and license information.
+
 ## Create a New Skill
 
 1. Copy the template:
