@@ -14,5 +14,13 @@
       ]
     },
     "note": "Requires octo translation tooling in the Odoo project repository."
+  },
+  "odoo-log-debug": {
+    "requirements": {
+      "project_files": [
+        "docker-compose.yml"
+      ]
+    },
+    "note": "Uses docker compose logs for local Odoo diagnostics."
   }
 }

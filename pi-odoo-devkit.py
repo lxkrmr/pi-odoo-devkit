@@ -469,6 +469,7 @@ def default_selection(all_skills: list[SkillMeta], available_skill_names: set[st
         "odoo-addon-lifecycle",
         "odoo-translate",
         "odoo-ui-check",
+        "skill-authoring",
     }
     return (recommended & skill_names) & available_skill_names
 
@@ -683,15 +684,26 @@ def wizard(
     shared_skills_dir = project_dir / ".pi" / "skills" / "shared-devkit"
     current_skills = current_enabled_names(shared_skills_dir)
 
+    available_skill_names = {n for n, (ok, _) in availability.items() if ok}
+    recommended_available = default_selection(all_skills, available_skill_names)
+
     if current_skills:
         selected_skills = {n for n in current_skills if availability.get(n, (False, ""))[0]}
     else:
-        selected_skills = default_selection(all_skills, {n for n, (ok, _) in availability.items() if ok})
+        selected_skills = set(recommended_available)
 
     if interactive:
         click.echo("[skills selection]")
         term_width = shutil.get_terminal_size(fallback=(100, 24)).columns
         wrap_width = max(50, term_width - 8)
+
+        if current_skills:
+            missing_recommended = sorted(recommended_available - current_skills)
+            if missing_recommended:
+                click.echo("  New recommended skills available (currently disabled):")
+                for name in missing_recommended:
+                    click.echo(f"    • {name}")
+                click.echo("  You can enable them below.")
 
         for s in all_skills:
             ok, reason = availability.get(s.name, (True, ""))

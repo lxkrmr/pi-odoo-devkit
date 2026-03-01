@@ -1,10 +1,16 @@
 # Skills (`skills/`)
 
-This devkit intentionally exposes one UI skill for browser-driven checks:
+This devkit currently exposes shared Odoo development skills, including:
 
+- `local-db`
+- `odoo-addon-lifecycle`
+- `odoo-shell-debug`
+- `odoo-translate`
 - `odoo-ui-check`
+- `odoo-log-debug`
+- `skill-authoring`
 
-The JS browser tooling used by that skill is vendored in:
+The JS browser tooling used by the UI skill is vendored in:
 
 - `skills/browser-tools/browser-tools/`
 
