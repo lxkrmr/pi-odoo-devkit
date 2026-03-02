@@ -68,9 +68,34 @@ ssh -T git@github.com
 
 At review start, ask:
 
-1. PR number/link
+1. PR number/link (or whether to discover PRs first)
 2. Optional ticket context file (MHTML)
-3. Whether to do a quick scan first or deep review directly
+3. Optional label filter(s) for PR discovery/triage
+4. Whether to do a quick scan first or deep review directly
+
+### Label-aware PR discovery (optional)
+
+Use labels to narrow review candidates before selecting a PR:
+
+```bash
+# list open PRs including labels
+gh pr list --state open --json number,title,labels,author,url
+
+# filter open PRs by one label
+gh pr list --state open --label "<LABEL>" --json number,title,labels,author,url
+
+# filter open PRs by multiple labels (repeat --label)
+gh pr list --state open --label "<LABEL_A>" --label "<LABEL_B>" --json number,title,labels,author,url
+
+# exclude PRs by label (GitHub search syntax)
+gh pr list --search 'is:open -label:"<EXCLUDED_LABEL>"'
+
+# include + exclude together
+# (example: include bug, exclude wip)
+gh pr list --search 'is:open label:"bug" -label:"wip"'
+```
+
+When summarizing candidates, always include each PR's labels explicitly, including include/exclude filters used.
 
 ### If ticket MHTML is not available, offer capture instructions
 
@@ -89,6 +114,7 @@ Chrome / Chromium / Edge:
    ```bash
    gh pr view <PR_NUMBER>
    ```
+   - Explicitly capture labels from metadata (or via JSON fields) and include them in the review context.
 2. **Read changed files list (CLI)**
    ```bash
    gh pr diff <PR_NUMBER> --name-only
