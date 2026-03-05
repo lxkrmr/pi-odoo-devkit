@@ -49,7 +49,7 @@ PY
 
 If this step is skipped, `translation download` may produce a very incomplete `de.po` on fresh DBs.
 
-### 1. Download translations from Odoo
+### 1. Download translations from Odoo (required first write step)
 
 ```bash
 tools/octo translation download <addon_name>
@@ -58,6 +58,10 @@ tools/octo translation download <addon_name>
 This exports to:
 
 - `addons/custom/<addon_name>/i18n/de.po`
+
+Hard rule:
+- Always run this step first when updating translations. It replaces the local `de.po` with a fresh export (including updated header metadata like `POT-Creation-Date` / `PO-Revision-Date`).
+- Do **not** manually edit an existing `de.po` before this download.
 
 ### 2. Preview auto-fill from existing translations (dry run)
 
@@ -77,7 +81,7 @@ tools/octo translation from-existing <addon_name> --no-backup
 
 For each empty `msgstr` in `addons/custom/<addon_name>/i18n/de.po`:
 
-- **Identical in EN/DE** (e.g., "Material", "Status") → leave `msgstr ""` empty
+- **Identical in EN/DE** (e.g., "Material", "Status") → leave `msgstr ""` empty (do not fill these manually)
 - **Needs translation** → provide German translation
 
 Notes:
