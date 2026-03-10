@@ -141,7 +141,7 @@ Layout is stack-based for readability:
 - `e` — enable selected skill
 - `d` — disable selected skill
 - `s` — run quick setup
-- `c` — cleanup/uninstall skill-manager artifacts (with confirm)
+- `c` — cleanup/uninstall osmo-managed project artifacts (with confirm)
 - `x` — quick doctor summary + top fix suggestions
 - `X` — full doctor report in terminal
 - `r` — refresh
@@ -187,20 +187,18 @@ osmo cleanup [PROJECT_REPO_PATH]
 
 ## From your Odoo project
 
-After setup, use the project entrypoint:
+Use the global `osmo` command (installed via `pipx`):
 
 ```bash
-./.pi/skill-manager
+osmo
 ```
 
 ## How installation works (important)
 
-The skill manager installs skills into your project via **symlinks** (not file copies).
+The skill manager installs shared skills into your project via **symlinks** (not file copies).
 
-- project entrypoint symlink:
-  - `<odoo-project>/.pi/skill-manager` → `<skill-manager-root>/osmo.py`
 - shared skills symlink directory:
-  - `<odoo-project>/.pi/skills/shared-skill-manager/<skill>` → `<skill-manager-root>/skills/<skill>`
+  - `<odoo-project>/.pi/skills/shared-osmo/<skill>` → `<skill-manager-root>/skills/<skill>`
 
 Why this is useful:
 - one source of truth in the skill manager repo

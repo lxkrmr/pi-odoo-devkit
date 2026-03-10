@@ -30,6 +30,9 @@ Rules for the coding agent in this repository.
 6. **Respect privacy/security hygiene in all outputs.**
    - No secrets/tokens.
    - No machine-specific absolute paths in shared docs/examples.
+7. **Keep one command surface (KISS).**
+   - Use global `osmo` via `pipx` as the single command path.
+   - Do not introduce project-local command entrypoints (e.g. `.pi/...` launcher scripts/symlinks).
 
 ## Agent Log Rule
 - `LEARNING_AND_SHARING.md` is a casual logbook.

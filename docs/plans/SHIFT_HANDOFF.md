@@ -6,8 +6,8 @@
 - `./scripts/smoke-test.sh` is deterministic (`.venv/bin/python`) and passes.
 - Skill catalog is consolidated (`odoo-otto` unified skill).
 - Naming/paths aligned to:
-  - `.pi/skill-manager`
-  - `.pi/skills/shared-skill-manager`
+  - global `osmo` command via `pipx`
+  - `.pi/skills/shared-osmo`
 - No known local secret leakage in tracked files; hygiene checks active.
 
 ## Product direction (active)

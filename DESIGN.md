@@ -36,8 +36,8 @@ Rationale:
 - Doctor should return actionable recommendations
 
 ## Project Integration Model
-- Project entrypoint: `.pi/skill-manager` symlink
-- Shared skills under: `.pi/skills/shared-skill-manager/`
+- One command surface: global `osmo` CLI (installed via `pipx`)
+- Shared skills under: `.pi/skills/shared-osmo/`
 - Installation uses symlinks, not file copies
 
 ## Security & Privacy Policy
@@ -53,7 +53,7 @@ osmo doctor /path/to/odoo-project
 
 ## Non-Goals
 - No multiple competing setup flows.
-- No compatibility wrappers that hide the real entrypoint.
+- No compatibility wrappers or extra project-local command entrypoints.
 - No hidden magic that depends on one developer machine.
 
 ## Temporary Planning
