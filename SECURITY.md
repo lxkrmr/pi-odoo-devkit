@@ -24,7 +24,7 @@ This devkit is intended to be generic and safe to share.
 Run doctor before sharing or tagging releases:
 
 ```bash
-./pi-odoo-skill-manager.py doctor /path/to/odoo-project
+pi-odoo-skill-manager doctor /path/to/odoo-project
 ```
 
 Doctor includes a content-hygiene check for obvious personal-path/company-specific patterns.

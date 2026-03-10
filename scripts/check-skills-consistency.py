@@ -92,7 +92,7 @@ def main() -> int:
             f"expected {sorted(discovered)} got {sorted(skills_readme)}"
         )
 
-    defaults = extract_recommended_defaults(ROOT / "pi-odoo-skill-manager.py")
+    defaults = extract_recommended_defaults(ROOT / "pi_odoo_skill_manager.py")
     stale_defaults = defaults - discovered
     if stale_defaults:
         errors.append(f"default skill selection contains missing skills: {sorted(stale_defaults)}")
