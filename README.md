@@ -2,6 +2,12 @@
 
 Lean local helper for managing pi skills in Odoo projects.
 
+## Naming
+
+`osmo` = **O**doo **S**kill **M**anagement t**O**ol
+
+The final `O` in `osmo` (from t**O**ol) is an easter egg aligned with the `octo` / `otto` naming style.
+
 ## Principles
 
 - TUI-first DX for humans (clear, friendly, low-friction)
