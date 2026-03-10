@@ -18,9 +18,9 @@ https://github.com/badlogic/pi-skills
    ```
 2. Ensure Odoo is reachable:
    - `http://localhost:8069`
-3. Ensure browser-tools deps are installed (tooling lives in `skills/browser-tools/browser-tools`). Use the global `pi-odoo-skill-manager` command so automation and human usage stay consistent:
+3. Ensure browser-tools deps are installed (tooling lives in `skills/browser-tools/browser-tools`). Use the global `osmo` command so automation and human usage stay consistent:
    ```bash
-   pi-odoo-skill-manager wizard /path/to/odoo-project --yes
+   osmo wizard /path/to/odoo-project --yes
    ```
 4. Ensure CDP is reachable:
    ```bash

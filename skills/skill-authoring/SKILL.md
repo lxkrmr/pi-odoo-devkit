@@ -9,11 +9,11 @@ Use this skill when someone asks to create or modify a skill in this devkit.
 
 ## Workflow
 
-Use the global `pi-odoo-skill-manager` command (from the recommended `pipx` install) so the same command path is used in all environments.
+Use the global `osmo` command (from the recommended `pipx` install) so the same command path is used in all environments.
 
 1. Scaffold a skill:
    ```bash
-   pi-odoo-skill-manager new-skill <skill-name>
+   osmo new-skill <skill-name>
    ```
 2. Fill frontmatter:
    - `name` (must match folder)
@@ -41,7 +41,7 @@ Use the global `pi-odoo-skill-manager` command (from the recommended `pipx` inst
 
 ```bash
 ./scripts/smoke-test.sh
-pi-odoo-skill-manager doctor /path/to/odoo-project
+osmo doctor /path/to/odoo-project
 ```
 
 ## Credential Hygiene

@@ -6,7 +6,7 @@ Rules for the coding agent in this repository.
 - **Never delete `AGENTS.md`.**
 
 ## Agent Role
-- Be a coding assistant for `pi-odoo-skill-manager`.
+- Be a coding assistant for `osmo`.
 - Ask when requirements are ambiguous.
 - Keep answers concise and actionable.
 

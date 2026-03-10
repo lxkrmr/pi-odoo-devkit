@@ -19,12 +19,12 @@ The JS browser tooling used by the UI skill is vendored in:
 
 (Adapted from Mario Zechner's pi-skills: https://github.com/badlogic/pi-skills)
 
-Note: examples use the global `pi-odoo-skill-manager` command (installed via `pipx`) so the same command works for humans and agents across terminals.
+Note: examples use the global `osmo` command (installed via `pipx`) so the same command works for humans and agents across terminals.
 
 ## Create a New Skill
 
 ```bash
-pi-odoo-skill-manager new-skill <new-skill>
+osmo new-skill <new-skill>
 ```
 
 This creates:

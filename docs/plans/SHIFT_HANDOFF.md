@@ -1,8 +1,8 @@
 # Shift Handoff — 2026-03-10
 
 ## Current state
-- Repo renamed and aligned to `pi-odoo-skill-manager`.
-- Global install path works via `pipx` (`pyproject.toml` + `pi_odoo_skill_manager.py` entrypoint).
+- Repo renamed and aligned to `osmo`.
+- Global install path works via `pipx` (`pyproject.toml` + `osmo.py` entrypoint).
 - `./scripts/smoke-test.sh` is deterministic (`.venv/bin/python`) and passes.
 - Skill catalog is consolidated (`odoo-otto` unified skill).
 - Naming/paths aligned to:
@@ -31,9 +31,9 @@
 
 # global command (local editable)
 pipx install --editable .
-pi-odoo-skill-manager --help
+osmo --help
 
 # contract checks
-pi-odoo-skill-manager doctor --describe --output json
-pi-odoo-skill-manager cleanup --dry-run --output json <PROJECT_REPO_PATH>
+osmo doctor --describe --output json
+osmo cleanup --dry-run --output json <PROJECT_REPO_PATH>
 ```

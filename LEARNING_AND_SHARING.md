@@ -99,7 +99,7 @@ That means keyboard-first, calm screens, and useful feedback instead of terminal
 
 # Otto Transfer Day
 
-Today I brought lessons from `otto` over to `pi-odoo-skill-manager`, and honestly it felt like carrying good engineering habits between starships.
+Today I brought lessons from `otto` over to `osmo`, and honestly it felt like carrying good engineering habits between starships.
 
 Big transfer items:
 - one path beats many clever paths

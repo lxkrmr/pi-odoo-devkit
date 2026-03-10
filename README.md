@@ -1,4 +1,4 @@
-# pi-odoo-skill-manager
+# osmo
 
 Lean local helper for managing pi skills in Odoo projects.
 
@@ -67,7 +67,7 @@ direnv allow
 ```
 
 Why this is the recommended path:
-- `pipx` makes `pi-odoo-skill-manager` available in your shell `PATH` everywhere, so humans and agents can call the same command consistently.
+- `pipx` makes `osmo` available in your shell `PATH` everywhere, so humans and agents can call the same command consistently.
 - `pipx` isolates the CLI in its own environment, preventing global Python package conflicts.
 - `bootstrap.sh` keeps repo dependencies inside `.venv`, so installs do not leak into system Python.
 - `direnv allow` auto-activates `.venv` whenever you enter the repo, including new terminals (no manual re-activation step).
@@ -75,21 +75,21 @@ Why this is the recommended path:
 
 Update:
 ```bash
-pipx upgrade pi-odoo-skill-manager
+pipx upgrade osmo
 ```
 
 Uninstall:
 ```bash
-pipx uninstall pi-odoo-skill-manager
+pipx uninstall osmo
 ```
 
 ### Daily workflow
 
 ```bash
-cd /path/to/pi-odoo-skill-manager
+cd /path/to/osmo
 # direnv auto-activates .venv
 ./scripts/smoke-test.sh
-pi-odoo-skill-manager
+osmo
 ```
 
 If dependencies change (`requirements.txt` updates), rerun:
@@ -101,22 +101,22 @@ If dependencies change (`requirements.txt` updates), rerun:
 ## Human + Agent workflow (same command surface)
 
 Why this matters:
-- Humans and agents should run the same executable: `pi-odoo-skill-manager`.
+- Humans and agents should run the same executable: `osmo`.
 - This avoids “works in one shell, fails in another” issues.
 - It keeps automation deterministic.
 
 Human-first (interactive):
 
 ```bash
-pi-odoo-skill-manager
+osmo
 ```
 
 Agent-first (deterministic CLI):
 
 ```bash
-pi-odoo-skill-manager doctor /path/to/odoo-project --output json
-pi-odoo-skill-manager cleanup /path/to/odoo-project --dry-run --output json
-pi-odoo-skill-manager doctor --describe --output json
+osmo doctor /path/to/odoo-project --output json
+osmo cleanup /path/to/odoo-project --dry-run --output json
+osmo doctor --describe --output json
 ```
 
 ## TUI-first usage
@@ -124,7 +124,7 @@ pi-odoo-skill-manager doctor --describe --output json
 Run the skill manager without arguments:
 
 ```bash
-pi-odoo-skill-manager
+osmo
 ```
 
 This opens the interactive TUI (default experience).
@@ -158,7 +158,7 @@ The tool resolves your Odoo project path by:
 You can clear saved path with:
 
 ```bash
-pi-odoo-skill-manager reset-project-path
+osmo reset-project-path
 ```
 
 ## Doctor is actionable
@@ -176,13 +176,13 @@ Use quick `x` for in-TUI guidance, and `X` when you want the full report.
 The TUI is primary. Command mode is agent-friendly for deterministic automation:
 
 ```bash
-pi-odoo-skill-manager --help
-pi-odoo-skill-manager ui [PROJECT_REPO_PATH]
-pi-odoo-skill-manager wizard [PROJECT_REPO_PATH]
-pi-odoo-skill-manager doctor [PROJECT_REPO_PATH]
-pi-odoo-skill-manager doctor [PROJECT_REPO_PATH] --output json
-pi-odoo-skill-manager doctor --describe --output json
-pi-odoo-skill-manager cleanup [PROJECT_REPO_PATH]
+osmo --help
+osmo ui [PROJECT_REPO_PATH]
+osmo wizard [PROJECT_REPO_PATH]
+osmo doctor [PROJECT_REPO_PATH]
+osmo doctor [PROJECT_REPO_PATH] --output json
+osmo doctor --describe --output json
+osmo cleanup [PROJECT_REPO_PATH]
 ```
 
 ## From your Odoo project
@@ -198,7 +198,7 @@ After setup, use the project entrypoint:
 The skill manager installs skills into your project via **symlinks** (not file copies).
 
 - project entrypoint symlink:
-  - `<odoo-project>/.pi/skill-manager` → `<skill-manager-root>/pi_odoo_skill_manager.py`
+  - `<odoo-project>/.pi/skill-manager` → `<skill-manager-root>/osmo.py`
 - shared skills symlink directory:
   - `<odoo-project>/.pi/skills/shared-skill-manager/<skill>` → `<skill-manager-root>/skills/<skill>`
 

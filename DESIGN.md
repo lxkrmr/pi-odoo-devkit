@@ -1,6 +1,6 @@
 # DESIGN.md
 
-Design rules and product decisions for `pi-odoo-skill-manager`.
+Design rules and product decisions for `osmo`.
 
 ## Goal
 A lean skill manager for Odoo projects with:
@@ -29,7 +29,7 @@ Rationale:
 - smoke/hook checks keep behavior deterministic.
 
 ## CLI Contract Direction
-- Human default: `pi-odoo-skill-manager` (TUI)
+- Human default: `osmo` (TUI)
 - Agent default: JSON-first commands
 - Automation-relevant commands expose `--output json`
 - Mutating commands should support `--dry-run`
@@ -48,7 +48,7 @@ Rationale:
 - Run doctor before release/share:
 
 ```bash
-pi-odoo-skill-manager doctor /path/to/odoo-project
+osmo doctor /path/to/odoo-project
 ```
 
 ## Non-Goals

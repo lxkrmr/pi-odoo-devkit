@@ -5,7 +5,7 @@ Status: in progress
 Owner: coding-agent
 
 ## Scope
-Hard rename from `pi-odoo-skill-manager` to `osmo` with zero legacy naming left in tracked files.
+Hard rename to `osmo` with zero legacy naming left in tracked files.
 
 ## Constraints
 - No compatibility aliases.
@@ -14,8 +14,8 @@ Hard rename from `pi-odoo-skill-manager` to `osmo` with zero legacy naming left 
 
 ## Execution Plan
 1. Cleanup local global install first.
-   - Uninstall legacy pipx app/package.
-   - Verify `pipx list` no longer contains `pi-odoo-skill-manager`.
+   - Uninstall previous pipx app/package.
+   - Verify `pipx list` no longer contains the previous package.
 2. Rename code/package entrypoints to `osmo`.
    - Python module file
    - `pyproject.toml` package + script entry
@@ -36,7 +36,7 @@ Hard rename from `pi-odoo-skill-manager` to `osmo` with zero legacy naming left 
 - [x] (1) pipx cleanup executed
 - [x] (2) core rename applied in working tree
 - [x] (3) legacy token replacement applied in working tree
-- [ ] (4) smoke validation
+- [x] (4) smoke validation
 - [ ] (5) commit split/finalization
-- [ ] (6) user repo rename
-- [ ] (7) set `origin` URL
+- [x] (6) user repo rename
+- [x] (7) set `origin` URL
