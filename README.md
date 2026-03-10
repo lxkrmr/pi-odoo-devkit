@@ -1,12 +1,23 @@
-# pi-odoo-devkit
+# pi-odoo-skill-manager
 
 Lean local helper for managing pi skills in Odoo projects.
 
 ## Principles
 
+- TUI-first DX for humans (clear, friendly, low-friction)
+- CLI-first determinism for agents (`json`-friendly, scriptable, reliable)
 - One clear setup path (KISS)
-- Deterministic checks for agents and humans
 - Shared skills stay consistent across docs, manifest, and defaults
+- Distribution standard for tools: `pipx`
+
+## UX inspirations
+
+- `lazygit`
+- `lazydocker`
+- `k9s`
+- `otto`
+
+Target feel: keyboard-first, readable, calm defaults, strong feedback loops.
 
 ## Developer setup (one path)
 
@@ -18,10 +29,10 @@ Lean local helper for managing pi skills in Odoo projects.
 
 ## TUI-first usage
 
-Run the devkit without arguments:
+Run the skill manager without arguments:
 
 ```bash
-./pi-odoo-devkit.py
+./pi-odoo-skill-manager.py
 ```
 
 This opens the interactive TUI (default experience).
@@ -38,7 +49,7 @@ Layout is stack-based for readability:
 - `e` — enable selected skill
 - `d` — disable selected skill
 - `s` — run quick setup
-- `c` — cleanup/uninstall devkit artifacts (with confirm)
+- `c` — cleanup/uninstall skill-manager artifacts (with confirm)
 - `x` — quick doctor summary + top fix suggestions
 - `X` — full doctor report in terminal
 - `r` — refresh
@@ -55,7 +66,7 @@ The tool resolves your Odoo project path by:
 You can clear saved path with:
 
 ```bash
-./pi-odoo-devkit.py reset-project-path
+./pi-odoo-skill-manager.py reset-project-path
 ```
 
 ## Doctor is actionable
@@ -73,11 +84,11 @@ Use quick `x` for in-TUI guidance, and `X` when you want the full report.
 The TUI is primary. Command mode is still available:
 
 ```bash
-./pi-odoo-devkit.py --help
-./pi-odoo-devkit.py ui [PROJECT_REPO_PATH]
-./pi-odoo-devkit.py wizard [PROJECT_REPO_PATH]
-./pi-odoo-devkit.py doctor [PROJECT_REPO_PATH]
-./pi-odoo-devkit.py cleanup [PROJECT_REPO_PATH]
+./pi-odoo-skill-manager.py --help
+./pi-odoo-skill-manager.py ui [PROJECT_REPO_PATH]
+./pi-odoo-skill-manager.py wizard [PROJECT_REPO_PATH]
+./pi-odoo-skill-manager.py doctor [PROJECT_REPO_PATH]
+./pi-odoo-skill-manager.py cleanup [PROJECT_REPO_PATH]
 ```
 
 ## From your Odoo project
@@ -88,12 +99,14 @@ After setup, use the project entrypoint:
 ./.pi/devkit
 ```
 
+(`.pi/devkit` is kept as a stable compatibility entrypoint.)
+
 ## How installation works (important)
 
 The devkit installs skills into your project via **symlinks** (not file copies).
 
 - project entrypoint symlink:
-  - `<odoo-project>/.pi/devkit` → `<devkit-root>/pi-odoo-devkit.py`
+  - `<odoo-project>/.pi/devkit` → `<devkit-root>/pi-odoo-skill-manager.py`
 - shared skills symlink directory:
   - `<odoo-project>/.pi/skills/shared-devkit/<skill>` → `<devkit-root>/skills/<skill>`
 

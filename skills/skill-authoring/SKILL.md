@@ -11,7 +11,7 @@ Use this skill when someone asks to create or modify a skill in this devkit.
 
 1. Scaffold a skill:
    ```bash
-   ./pi-odoo-devkit.py new-skill <skill-name>
+   ./pi-odoo-skill-manager.py new-skill <skill-name>
    ```
 2. Fill frontmatter:
    - `name` (must match folder)
@@ -39,7 +39,7 @@ Use this skill when someone asks to create or modify a skill in this devkit.
 
 ```bash
 ./scripts/smoke-test.sh
-./pi-odoo-devkit.py doctor /path/to/odoo-project
+./pi-odoo-skill-manager.py doctor /path/to/odoo-project
 ```
 
 ## Credential Hygiene

@@ -20,7 +20,7 @@ https://github.com/badlogic/pi-skills
    - `http://localhost:8069`
 3. Ensure browser-tools deps are installed (tooling lives in `skills/browser-tools/browser-tools`):
    ```bash
-   ./pi-odoo-devkit.py wizard /path/to/odoo-project --yes --with-browser-tools
+   ./pi-odoo-skill-manager.py wizard /path/to/odoo-project --yes --with-browser-tools
    ```
 4. Ensure CDP is reachable:
    ```bash

@@ -22,7 +22,7 @@ The JS browser tooling used by the UI skill is vendored in:
 ## Create a New Skill
 
 ```bash
-./pi-odoo-devkit.py new-skill <new-skill>
+./pi-odoo-skill-manager.py new-skill <new-skill>
 ```
 
 This creates:

@@ -1,4 +1,4 @@
-# Plan: transfer otto learnings to pi-odoo-devkit
+# Plan: transfer otto learnings to pi-odoo-skill-manager
 
 Date: 2026-03-10
 Status: agreed
