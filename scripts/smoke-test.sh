@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PY="$ROOT/.venv/bin/python"
-CLI="$ROOT/pi-odoo-devkit.py"
+CLI="$ROOT/pi-odoo-skill-manager.py"
 CHECKER="$ROOT/scripts/check-skills-consistency.py"
 
 if [ ! -x "$PY" ]; then
@@ -29,26 +29,44 @@ echo "[smoke] help"
 "$PY" "$CLI" reset-project-path --help >/dev/null
 
 echo "[smoke] non-interactive path guardrails"
-if "$PY" "$CLI" wizard --yes >/tmp/devkit-smoke.out 2>&1; then
+ENVRC_LOCAL="$ROOT/.envrc.local"
+ENVRC_LOCAL_BAK="$ROOT/.envrc.local.smoke.bak"
+TMP_PROJECT=""
+
+cleanup() {
+  if [ -n "$TMP_PROJECT" ] && [ -d "$TMP_PROJECT" ]; then
+    rm -rf "$TMP_PROJECT"
+  fi
+  rm -f /tmp/devkit-smoke.out
+  if [ -f "$ENVRC_LOCAL_BAK" ]; then
+    mv "$ENVRC_LOCAL_BAK" "$ENVRC_LOCAL"
+  fi
+}
+trap cleanup EXIT
+
+if [ -f "$ENVRC_LOCAL" ]; then
+  mv "$ENVRC_LOCAL" "$ENVRC_LOCAL_BAK"
+fi
+
+if "$PY" "$CLI" wizard --yes </dev/null >/tmp/devkit-smoke.out 2>&1; then
   echo "wizard --yes without path should fail" >&2
   exit 1
 fi
 grep -q "PROJECT_REPO_PATH is required" /tmp/devkit-smoke.out
 
-if "$PY" "$CLI" doctor >/tmp/devkit-smoke.out 2>&1; then
+if "$PY" "$CLI" doctor </dev/null >/tmp/devkit-smoke.out 2>&1; then
   echo "doctor without path in non-interactive mode should fail" >&2
   exit 1
 fi
 grep -q "PROJECT_REPO_PATH is required" /tmp/devkit-smoke.out
 
-if "$PY" "$CLI" cleanup --yes >/tmp/devkit-smoke.out 2>&1; then
+if "$PY" "$CLI" cleanup --yes </dev/null >/tmp/devkit-smoke.out 2>&1; then
   echo "cleanup --yes without path should fail" >&2
   exit 1
 fi
 grep -q "PROJECT_REPO_PATH is required" /tmp/devkit-smoke.out
 
 TMP_PROJECT="$(mktemp -d)"
-trap 'rm -rf "$TMP_PROJECT" /tmp/devkit-smoke.out' EXIT
 
 echo "[smoke] cleanup on empty project"
 cat >"$TMP_PROJECT/docker-compose.yml" <<'YAML'
