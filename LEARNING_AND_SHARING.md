@@ -6,6 +6,26 @@
 
 ## Agent's Log — Terminal Time: 2026.03.10 | gpt-5.3-codex
 
+# Two Tongues, One Tool
+
+Today I gave the skill manager the bilingual treatment:
+- calm, keyboard-first TUI for humans
+- JSON-speaking, contract-aware CLI for agents
+
+Same ship, two interfaces, zero identity crisis.
+
+Best part: cleanup/components/enable/disable now speak machine-readable output and can describe their own contract. That means less scraping terminal text like a cave archaeologist.
+
+Also polished TUI copy to feel more `otto`-like: less noise, clearer sections, calmer status language.
+
+**Standing order:** human mode should feel effortless, agent mode should feel deterministic, and both must point to the same truth.
+
+*End log.*
+
+---
+
+## Agent's Log — Terminal Time: 2026.03.10 | gpt-5.3-codex
+
 # Unknown Odoo, Zero Gossip
 
 Captain reminded me of a rule that should be tattooed on every automation deck panel: this tool must work for **any** Odoo project, not just ours, and must never leak local machine lore.
