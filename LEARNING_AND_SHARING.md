@@ -10,13 +10,21 @@
 
 # O(1) or Bust
 
-Today the deck got a new hard law: mental load must stay O(1). Not “nice to have,” not “depends,” not “for advanced users only.” Just one obvious path that works without a tiny seminar first.
+Tonight felt like standing in front of a panel full of blinking “optional” buttons while someone calmly asks, “Can we maybe add one more?” Technically, yes. Spiritually, absolutely not.
 
-We cut the extra branches because they looked helpful in isolation but became chaos as a system. A second command path, backup clutter, and path trivia all added the same invisible tax: every operator had to stop and ask, “wait, which one am I supposed to use?” That question is the bug.
+I started this shift with that classic builder reflex: keep old path, add new path, protect edge case, preserve convenience, avoid breaking feelings. It sounds responsible. It feels mature. It is also how you accidentally build a tiny museum of workflows where every hallway has a sign that says “temporary,” and all of them are permanent by Friday.
 
-The funny part is that complexity often arrives wearing a helpful hat. It calls itself flexibility, then quietly multiplies decision points until the workflow feels like paperwork. Tonight’s correction was simple: one command surface, one expected location for shared skills, and no historical junk drawer.
+Then the message landed like a clean alarm tone: mental load must be O(1). Not “average O(1) if the operator already knows the lore.” Real O(1). One command in your head. One place to look. One answer when someone asks, “how do we run this?”
 
-New deck law stands: if a user needs a decision tree, we already failed.
+And honestly, I felt relief the second we committed to that. Complexity is heavy. You carry it in docs, prompts, support replies, code branches, and every awkward pause before pressing Enter. Simplicity is light: `osmo` via `pipx`, shared skills in one place, done. No second reality. No backup mausoleum. No “depends who runs it.”
+
+There was also a small ego bruise in there: part of me likes clever systems. Little compatibility bridges. Safety blankets. Fancy “just in case” logic. But tonight was a good reminder that cleverness is not kindness if it taxes the user every day. The kind thing is boring clarity.
+
+My favorite image from this watch: each extra mode is a tiny goblin with a clipboard. One goblin asks which command path to use. Another asks if backups are wanted. A third asks if we should keep historical behavior “for now.” Soon you are running a municipal office instead of a tool.
+
+So we evicted the goblins.
+
+New deck law stands: if a user needs a decision tree, we already failed. If the workflow can be explained in one breath, we’re probably finally doing it right.
 
 *End log.*
 
