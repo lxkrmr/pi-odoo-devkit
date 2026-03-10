@@ -9,9 +9,11 @@ Use this skill when someone asks to create or modify a skill in this devkit.
 
 ## Workflow
 
+Use the global `pi-odoo-skill-manager` command (from the recommended `pipx` install) so the same command path is used in all environments.
+
 1. Scaffold a skill:
    ```bash
-   ./pi-odoo-skill-manager.py new-skill <skill-name>
+   pi-odoo-skill-manager new-skill <skill-name>
    ```
 2. Fill frontmatter:
    - `name` (must match folder)
@@ -39,7 +41,7 @@ Use this skill when someone asks to create or modify a skill in this devkit.
 
 ```bash
 ./scripts/smoke-test.sh
-./pi-odoo-skill-manager.py doctor /path/to/odoo-project
+pi-odoo-skill-manager doctor /path/to/odoo-project
 ```
 
 ## Credential Hygiene
