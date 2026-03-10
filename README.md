@@ -99,7 +99,7 @@ After setup, use the project entrypoint:
 ./.pi/devkit
 ```
 
-(`.pi/devkit` is kept as a stable compatibility entrypoint.)
+(`.pi/devkit` is the stable project entrypoint.)
 
 ## How installation works (important)
 
