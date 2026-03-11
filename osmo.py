@@ -886,12 +886,12 @@ def run_tui(root: Path, project_dir: Path) -> None:
         curses.curs_set(0)
         curses.start_color()
         curses.use_default_colors()
-        curses.init_pair(1, curses.COLOR_CYAN, -1)   # title
+        curses.init_pair(1, curses.COLOR_WHITE, -1)   # frame/title
         curses.init_pair(2, curses.COLOR_GREEN, -1)  # enabled
         curses.init_pair(3, curses.COLOR_YELLOW, -1) # available
         curses.init_pair(4, curses.COLOR_RED, -1)    # unavailable
-        curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLUE)  # selection
-        curses.init_pair(6, curses.COLOR_MAGENTA, -1)  # accent
+        curses.init_pair(5, curses.COLOR_BLACK, curses.COLOR_CYAN)  # selection
+        curses.init_pair(6, curses.COLOR_CYAN, -1)  # accent
         curses.init_pair(7, curses.COLOR_BLACK, curses.COLOR_CYAN)  # status bar
 
         selected_idx = 0
@@ -951,18 +951,44 @@ def run_tui(root: Path, project_dir: Path) -> None:
                     pass
 
             def hline(y: int, x: int, width: int) -> None:
-                if width <= 0:
+                if width <= 0 or y < 0 or y >= h:
                     return
-                put(y, x, "─" * width, curses.color_pair(1))
+                for xx in range(x, min(x + width, w - 1)):
+                    try:
+                        stdscr.addch(y, xx, curses.ACS_HLINE, curses.color_pair(1))
+                    except curses.error:
+                        pass
 
             def box(y: int, x: int, bh: int, bw: int, title: str = "") -> None:
                 if bh < 3 or bw < 4:
                     return
-                put(y, x, "┌" + ("─" * (bw - 2)) + "┐", curses.color_pair(1))
-                for yy in range(y + 1, y + bh - 1):
-                    put(yy, x, "│", curses.color_pair(1))
-                    put(yy, x + bw - 1, "│", curses.color_pair(1))
-                put(y + bh - 1, x, "└" + ("─" * (bw - 2)) + "┘", curses.color_pair(1))
+                right = min(x + bw - 1, w - 2)
+                bottom = min(y + bh - 1, h - 2)
+                if right - x < 3 or bottom - y < 2:
+                    return
+
+                try:
+                    stdscr.addch(y, x, curses.ACS_ULCORNER, curses.color_pair(1))
+                    stdscr.addch(y, right, curses.ACS_URCORNER, curses.color_pair(1))
+                    stdscr.addch(bottom, x, curses.ACS_LLCORNER, curses.color_pair(1))
+                    stdscr.addch(bottom, right, curses.ACS_LRCORNER, curses.color_pair(1))
+                except curses.error:
+                    pass
+
+                for xx in range(x + 1, right):
+                    try:
+                        stdscr.addch(y, xx, curses.ACS_HLINE, curses.color_pair(1))
+                        stdscr.addch(bottom, xx, curses.ACS_HLINE, curses.color_pair(1))
+                    except curses.error:
+                        pass
+
+                for yy in range(y + 1, bottom):
+                    try:
+                        stdscr.addch(yy, x, curses.ACS_VLINE, curses.color_pair(1))
+                        stdscr.addch(yy, right, curses.ACS_VLINE, curses.color_pair(1))
+                    except curses.error:
+                        pass
+
                 if title:
                     put(y, x + 2, f" {title} ", curses.color_pair(6) | curses.A_BOLD)
 
