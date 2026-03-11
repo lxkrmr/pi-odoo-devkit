@@ -16,6 +16,10 @@ The final `O` in `osmo` (from t**O**ol) is an easter egg aligned with the `octo`
 - Shared skills stay consistent across docs, manifest, and defaults
 - Distribution standard for tools: `pipx`
 
+## Release notes
+
+- `docs/releases/v0.2.0.md`
+
 ## UX inspirations
 
 - `lazygit`
@@ -203,7 +207,10 @@ Automation contract (JSON/describe/dry-run where mutating):
 Human-ops commands (intentionally outside automation contract):
 - `ui`, `new-skill`, `up`, `db`, `shell`, `test`, `lint`
 
-You can inspect this split machine-readably via:
+Stable contract spec:
+- `docs/cli-contract.md`
+
+You can inspect command scope machine-readably via:
 
 ```bash
 osmo help --output json
@@ -262,6 +269,7 @@ Smoke uses `.venv/bin/python` and checks:
 - CLI help/guardrails
 - skill metadata consistency (`skills/`, manifest, docs, defaults)
 - CLI contract behavior (`scripts/test-cli-contracts.sh`)
+- golden JSON snapshots (`scripts/test-cli-golden.sh`)
 
 ## Local git hook (recommended)
 
