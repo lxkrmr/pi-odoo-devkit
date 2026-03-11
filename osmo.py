@@ -892,6 +892,7 @@ def run_tui(root: Path, project_dir: Path) -> None:
         curses.init_pair(4, curses.COLOR_RED, -1)    # unavailable
         curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_BLUE)  # selection
         curses.init_pair(6, curses.COLOR_MAGENTA, -1)  # accent
+        curses.init_pair(7, curses.COLOR_BLACK, curses.COLOR_CYAN)  # status bar
 
         selected_idx = 0
         scroll = 0
@@ -927,10 +928,10 @@ def run_tui(root: Path, project_dir: Path) -> None:
             stdscr.erase()
             h, w = stdscr.getmaxyx()
 
-            if h < 18 or w < 72:
+            if h < 24 or w < 88:
                 stdscr.addstr(1, 2, "osmo")
                 stdscr.addstr(3, 2, f"Terminal too small ({w}x{h}).")
-                stdscr.addstr(4, 2, "Please resize to at least 72x18.")
+                stdscr.addstr(4, 2, "Please resize to at least 88x24.")
                 stdscr.addstr(6, 2, "Press q to quit or r to retry.")
                 stdscr.refresh()
                 key = stdscr.getch()
@@ -970,27 +971,33 @@ def run_tui(root: Path, project_dir: Path) -> None:
             available_count = sum(1 for s in statuses if s.available)
             unavailable_count = total - available_count
 
-            title = "osmo"
-            stats = f"enabled {enabled_count}/{total} · available {available_count} · unavailable {unavailable_count}"
-            legend = "● enabled   ○ available   ✕ unavailable"
-            mode = "tui"
-            put(0, 2, title, curses.color_pair(1) | curses.A_BOLD)
-            put(0, 24, f"[{mode}]", curses.color_pair(6) | curses.A_BOLD)
-            put(0, max(2, w - len(stats) - 2), stats, curses.color_pair(1))
-            put(1, 2, f"project: {project_dir}")
-            put(1, max(2, w - len(legend) - 2), legend, curses.color_pair(6))
-            hline(2, 1, max(0, w - 2))
-
-            body_top = 3
             panel_x = 1
             panel_w = max(10, w - 2)
 
-            # Layout: Skills (top), Details (middle), Activity (bottom)
+            title = "osmo"
+            stats = f"enabled {enabled_count}/{total} · available {available_count} · unavailable {unavailable_count}"
+            put(0, 2, title, curses.color_pair(1) | curses.A_BOLD)
+            put(0, max(2, w - len(stats) - 2), stats, curses.color_pair(1))
+            put(1, 2, f"project: {project_dir}")
+
+            mode_top = 2
+            box(mode_top, panel_x, 3, panel_w, "mode")
+            mode_badge = f" INSTALLED ({enabled_count}) "
+            put(mode_top + 1, panel_x + 2, mode_badge, curses.color_pair(5) | curses.A_BOLD)
+            put(mode_top + 1, panel_x + 2 + len(mode_badge) + 2, "filter: -")
+
+            use_top = mode_top + 3 + 1
+            box(use_top, panel_x, 3, panel_w, "use cases")
+            put(use_top + 1, panel_x + 2, "e enable | d disable | s setup | c cleanup | x doctor | X full report")
+
+            body_top = use_top + 3 + 1
+
+            # Layout: Skills (top), Details (middle), Activity (bottom) + status bar
             activity_h = max(6, min(10, h // 4))
-            activity_top = h - activity_h - 1
+            activity_top = h - activity_h - 2
             action_y = activity_top - 1
 
-            skills_h = min(max(8, total + 3), 12)
+            skills_h = min(max(10, total + 4), 14)
             details_top = body_top + skills_h
             details_h = action_y - details_top
 
@@ -1002,9 +1009,12 @@ def run_tui(root: Path, project_dir: Path) -> None:
 
             position = f"{selected_idx + 1}/{total}" if total else "0/0"
             box(body_top, panel_x, skills_h, panel_w, f"skills {position}")
+            put(body_top + 1, panel_x + 2, f"count: {total}")
+            put(body_top + 1, panel_x + 20, "name")
+            put(body_top + 1, max(panel_x + 2, panel_x + panel_w - 18), "state")
 
-            list_top = body_top + 1
-            list_height = max(3, skills_h - 2)
+            list_top = body_top + 2
+            list_height = max(3, skills_h - 3)
             if total > list_height:
                 put(body_top, panel_x + panel_w - 6, "↕", curses.color_pair(6) | curses.A_BOLD)
 
@@ -1020,15 +1030,17 @@ def run_tui(root: Path, project_dir: Path) -> None:
                     y = list_top + row_i
 
                     if st.enabled:
-                        icon, color = "●", curses.color_pair(2)
+                        icon, color, state = "●", curses.color_pair(2), "enabled"
                     elif st.available:
-                        icon, color = "○", curses.color_pair(3)
+                        icon, color, state = "○", curses.color_pair(3), "available"
                     else:
-                        icon, color = "✕", curses.color_pair(4)
+                        icon, color, state = "✕", curses.color_pair(4), "unavailable"
 
-                    label = f" {icon} {st.meta.name}"
+                    prefix = ">" if idx == selected_idx else " "
+                    label = f"{prefix} {icon} {st.meta.name}"
                     attr = (curses.color_pair(5) | curses.A_BOLD) if idx == selected_idx else color
                     put(y, panel_x + 1, label, attr)
+                    put(y, max(panel_x + 2, panel_x + panel_w - 18), state, color)
             else:
                 put(list_top, panel_x + 1, "No skills found.")
 
@@ -1088,13 +1100,17 @@ def run_tui(root: Path, project_dir: Path) -> None:
                         put(y, content_x, line, curses.color_pair(4))
                         y += 1
 
-            put(action_y - 1, 2, "navigation: [j/k] move  [Enter] toggle  [r] refresh  [q] quit", curses.color_pair(6))
-            put(action_y, 2, "actions: [e] enable  [d] disable  [s] setup  [c] cleanup  [x] doctor  [X] full report", curses.color_pair(6))
+            put(action_y - 1, 2, "tab mode | j/k move | Enter toggle | r refresh | q quit", curses.color_pair(6))
+            put(action_y, 2, "use cases: e enable | d disable | s setup | c cleanup | x doctor | X full report", curses.color_pair(6))
 
-            box(activity_top, 1, activity_h, max(10, w - 2), "activity log")
+            box(activity_top, 1, activity_h, max(10, w - 2), "doctor + status")
             recent_lines = messages[-max(1, activity_h - 2):]
             for i, line in enumerate(recent_lines):
                 put(activity_top + 1 + i, 2, f"• {line}")
+
+            footer = " osmo — sibling of otto — tui ready "
+            put(h - 1, 0, " " * (w - 1), curses.color_pair(7) | curses.A_BOLD)
+            put(h - 1, 1, footer, curses.color_pair(7) | curses.A_BOLD)
 
             stdscr.refresh()
             key = stdscr.getch()
