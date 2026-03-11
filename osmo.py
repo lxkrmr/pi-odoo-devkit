@@ -1124,6 +1124,10 @@ COMMAND_SPECS = {
         "supports_dry_run": True,
         "automation_relevant": True,
     },
+    "reset-project-path": {
+        "supports_dry_run": True,
+        "automation_relevant": True,
+    },
 }
 
 
@@ -1253,23 +1257,35 @@ def ui_cmd(project_repo_path: Path | None) -> None:
 @click.argument("project_repo_path", required=False, type=click.Path(path_type=Path))
 @click.option("--add-local-exclude", is_flag=True, help="Add '.pi/' to <project>/.git/info/exclude (local-only).")
 @click.option("--yes", is_flag=True, help="Non-interactive mode (use sensible defaults)")
+@click.option("--dry-run", is_flag=True, help="Show planned setup actions without modifying files")
+@click.option("--describe", is_flag=True, help="Describe command contract")
+@OUTPUT_OPTION
 def wizard(
     project_repo_path: Path | None,
     add_local_exclude: bool,
     yes: bool,
+    dry_run: bool,
+    describe: bool,
+    output_mode: str,
 ) -> None:
     """Run setup/reconfiguration wizard."""
+    command = "wizard"
+    if _maybe_describe(command, describe, output_mode):
+        return
 
-    root = devkit_root()
-    interactive = sys.stdin.isatty() and not yes
+    try:
+        root = devkit_root()
+        interactive = sys.stdin.isatty() and not yes and not dry_run and output_mode == OUTPUT_TEXT
 
-    if project_repo_path is None:
-        if not interactive:
-            raise click.ClickException("PROJECT_REPO_PATH is required in non-interactive mode.")
-        project_repo_path = prompt_project_repo_path(root)
+        if project_repo_path is None:
+            if not interactive:
+                raise click.ClickException("PROJECT_REPO_PATH is required in non-interactive mode.")
+            project_repo_path = prompt_project_repo_path(root)
 
-    project_dir = project_repo_path.expanduser().resolve()
-    check_project_repo(project_dir)
+        project_dir = project_repo_path.expanduser().resolve()
+        check_project_repo(project_dir)
+    except click.ClickException as error:
+        _emit_error(command, output_mode, error, code="validation_error", exit_code=2)
 
     if interactive:
         click.echo("Welcome to the Odoo Skill Manager setup wizard 👋")
@@ -1277,14 +1293,22 @@ def wizard(
         click.echo("No changes are written until final confirmation.")
         click.echo()
 
-    click.echo("[preflight]")
-    for row in preflight_checks():
-        click.echo(row)
-    click.echo()
+    preflight = preflight_checks()
+    if output_mode == OUTPUT_TEXT:
+        click.echo("[preflight]")
+        for row in preflight:
+            click.echo(row)
+        click.echo()
 
     missing_required = [tool for tool in ("python3", "docker") if not command_exists(tool)]
     if missing_required:
-        raise click.ClickException(f"Missing required tools: {', '.join(missing_required)}")
+        _emit_error(
+            command,
+            output_mode,
+            click.ClickException(f"Missing required tools: {', '.join(missing_required)}"),
+            code="missing_dependencies",
+            exit_code=2,
+        )
 
     all_skills = discover_skills(root)
     manifest = load_skill_manifest(root)
@@ -1349,7 +1373,9 @@ def wizard(
     enable_browser = odoo_ui_enabled
 
     enable_envrc = True
-    enable_local_exclude = add_local_exclude or (click.confirm("Hide local .pi files from git status on this machine?", default=True) if interactive else False)
+    enable_local_exclude = add_local_exclude or (
+        click.confirm("Hide local .pi files from git status on this machine?", default=True) if interactive else False
+    )
 
     if interactive:
         click.echo("\n[summary]")
@@ -1369,20 +1395,88 @@ def wizard(
         click.echo(f"    Add local git exclude (.pi/): {'yes' if enable_local_exclude else 'no'}")
 
         if not click.confirm("\nApply these changes now?", default=True):
-            click.echo("Cancelled. No changes were applied.")
+            if output_mode == OUTPUT_JSON:
+                _emit_success(command, output_mode, data={"project": str(project_dir), "cancelled": True})
+            else:
+                click.echo("Cancelled. No changes were applied.")
             return
-
-    (project_dir / ".pi" / "skills").mkdir(parents=True, exist_ok=True)
 
     skill_map = {
         s.name: s.path
         for s in all_skills
         if s.name in selected_skills and availability.get(s.name, (True, ""))[0]
     }
-    skill_msgs = sync_symlink_set(shared_skills_dir, skill_map)
 
+    planned_enable = sorted(set(skill_map.keys()) - current_skills)
+    planned_disable = sorted(current_skills - set(skill_map.keys()))
+    unchanged = sorted(current_skills & set(skill_map.keys()))
+
+    plan_data = {
+        "project": str(project_dir),
+        "dry_run": dry_run,
+        "preflight": preflight,
+        "selected_skills": sorted(skill_map.keys()),
+        "skill_changes": {
+            "enable": planned_enable,
+            "disable": planned_disable,
+            "unchanged": unchanged,
+        },
+        "options": {
+            "setup_env": enable_envrc,
+            "install_browser_tools": enable_browser,
+            "add_local_exclude": enable_local_exclude,
+        },
+    }
+
+    if dry_run:
+        text_lines = [
+            f"Plan for project: {project_dir}",
+            f"- Enable skills: {', '.join(planned_enable) if planned_enable else '(none)'}",
+            f"- Disable skills: {', '.join(planned_disable) if planned_disable else '(none)'}",
+            f"- Keep skills: {', '.join(unchanged) if unchanged else '(none)'}",
+            f"- Setup env: {'yes' if enable_envrc else 'no'}",
+            f"- Install browser-tools deps: {'yes' if enable_browser else 'no'}",
+            f"- Add local git exclude (.pi/): {'yes' if enable_local_exclude else 'no'}",
+            "No files were modified (--dry-run).",
+        ]
+        _emit_success(command, output_mode, data=plan_data, text_lines=text_lines)
+        return
+
+    (project_dir / ".pi" / "skills").mkdir(parents=True, exist_ok=True)
+
+    skill_msgs = sync_symlink_set(shared_skills_dir, skill_map)
     hygiene_msgs = sanitize_project_skills(project_dir, set(skill_map.keys()))
     notes_path = write_local_agent_notes(project_dir)
+
+    local_exclude_msg = ""
+    if enable_local_exclude:
+        local_exclude_msg = ensure_local_exclude(project_dir)
+
+    env_msgs: list[str] = []
+    if enable_envrc:
+        env_msgs = ensure_envrc(root)
+
+    browser_msgs: list[str] = []
+    if enable_browser:
+        browser_msgs = install_browser_tools(root)
+
+    if output_mode == OUTPUT_JSON:
+        _emit_success(
+            command,
+            output_mode,
+            data={
+                **plan_data,
+                "agent_notes": str(notes_path),
+                "results": {
+                    "skill_sync": skill_msgs,
+                    "hygiene": hygiene_msgs,
+                    "local_exclude": local_exclude_msg,
+                    "env_setup": env_msgs,
+                    "browser_setup": browser_msgs,
+                },
+            },
+        )
+        return
 
     click.echo(f"Installed skill manager into: {project_dir}")
     click.echo("\n[skills]")
@@ -1395,17 +1489,17 @@ def wizard(
         for msg in hygiene_msgs:
             click.echo(f"- {msg}")
 
-    if enable_local_exclude:
-        click.echo(ensure_local_exclude(project_dir))
+    if local_exclude_msg:
+        click.echo(local_exclude_msg)
 
-    if enable_envrc:
+    if env_msgs:
         click.echo("\n[env setup]")
-        for msg in ensure_envrc(root):
+        for msg in env_msgs:
             click.echo(f"- {msg}")
 
-    if enable_browser:
+    if browser_msgs:
         click.echo("\n[browser-tools]")
-        for msg in install_browser_tools(root):
+        for msg in browser_msgs:
             click.echo(f"- {msg}")
 
     print_agent_doc_guidance(project_dir, notes_path)
@@ -1661,15 +1755,50 @@ def cleanup_cmd(
 
 
 @cli.command("reset-project-path")
-def reset_project_path() -> None:
+@click.option("--dry-run", is_flag=True, help="Show if a saved project path would be removed")
+@click.option("--describe", is_flag=True, help="Describe command contract")
+@OUTPUT_OPTION
+def reset_project_path(dry_run: bool, describe: bool, output_mode: str) -> None:
     """Forget saved default Odoo project path (.envrc.local)."""
+    command = "reset-project-path"
+    if _maybe_describe(command, describe, output_mode):
+        return
+
     root = devkit_root()
     envrc_local = _envrc_local_path(root)
-    if envrc_local.exists():
+    exists = envrc_local.exists()
+
+    if dry_run:
+        _emit_success(
+            command,
+            output_mode,
+            data={
+                "dry_run": True,
+                "path": str(envrc_local),
+                "exists": exists,
+                "would_remove": exists,
+            },
+            text_lines=[
+                f"Dry-run: {'would remove' if exists else 'nothing to remove'} saved project path file: {envrc_local}"
+            ],
+        )
+        return
+
+    if exists:
         envrc_local.unlink()
-        click.echo(f"Removed saved project path file: {envrc_local}")
+        _emit_success(
+            command,
+            output_mode,
+            data={"dry_run": False, "path": str(envrc_local), "removed": True},
+            text_lines=[f"Removed saved project path file: {envrc_local}"],
+        )
     else:
-        click.echo("No saved project path found.")
+        _emit_success(
+            command,
+            output_mode,
+            data={"dry_run": False, "path": str(envrc_local), "removed": False},
+            text_lines=["No saved project path found."],
+        )
 
 
 @cli.command()
