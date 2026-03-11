@@ -171,6 +171,7 @@ Both doctor modes give guidance, not only status:
 - what failed/warned
 - what to do next
 - concrete follow-up commands when relevant
+- JSON mode includes `checks_structured[]` (`check_code`, `category`, `resource`, `severity`, ...)
 - JSON mode includes `recommendations_structured[]` with `code`, `severity`, `message`, `next_command`
 
 Use quick `x` for in-TUI guidance, and `X` when you want the full report.
