@@ -2,8 +2,8 @@
   "ok": true,
   "command": "doctor",
   "data": {
-    "skill_manager_root": "__string__",
-    "project": "__string__",
+    "skill_manager_root": "__path__",
+    "project": "__path__",
     "fail_count": "__number__",
     "warn_count": "__number__",
     "checks": "__array__",

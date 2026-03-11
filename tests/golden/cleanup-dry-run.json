@@ -2,7 +2,7 @@
   "ok": true,
   "command": "cleanup",
   "data": {
-    "project": "__string__",
+    "project": "__path__",
     "dry_run": true,
     "actions": "__array__",
     "applied": "__array__",

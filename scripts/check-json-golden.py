@@ -6,6 +6,9 @@ import sys
 from pathlib import Path
 
 
+PATH_HINTS = ("/", "\\")
+
+
 def match(expected, actual, path: str = "$") -> list[str]:
     errors: list[str] = []
 
@@ -15,6 +18,12 @@ def match(expected, actual, path: str = "$") -> list[str]:
             return errors
         if token == "__string__" and not isinstance(actual, str):
             return [f"{path}: expected string, got {type(actual).__name__}"]
+        if token == "__path__":
+            if not isinstance(actual, str):
+                return [f"{path}: expected path string, got {type(actual).__name__}"]
+            if not actual or not any(sep in actual for sep in PATH_HINTS):
+                return [f"{path}: expected path-like string, got {actual!r}"]
+            return errors
         if token == "__bool__" and not isinstance(actual, bool):
             return [f"{path}: expected bool, got {type(actual).__name__}"]
         if token == "__number__" and not isinstance(actual, (int, float)):

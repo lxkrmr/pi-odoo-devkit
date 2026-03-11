@@ -2,7 +2,7 @@
   "ok": true,
   "command": "wizard",
   "data": {
-    "project": "__string__",
+    "project": "__path__",
     "dry_run": true,
     "preflight": "__array__",
     "selected_skills": "__array__",

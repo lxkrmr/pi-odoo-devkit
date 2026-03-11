@@ -2,8 +2,8 @@
   "ok": true,
   "command": "components",
   "data": {
-    "project": "__string__",
-    "skill_manager_root": "__string__",
+    "project": "__path__",
+    "skill_manager_root": "__path__",
     "skills": "__array__"
   }
 }
