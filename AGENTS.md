@@ -39,6 +39,8 @@ Rules for the coding agent in this repository.
 9. **Execute approved multi-step plans end-to-end.**
    - If the user approves a named step plan, run all steps autonomously.
    - Do not request per-step permission again unless blocked or requirements changed.
+10. **Call out `pipx` update steps when relevant.**
+   - When changes affect installed `osmo` behavior/version, explicitly remind the user to run `pipx upgrade osmo` (or reinstall editable if needed).
 
 ## Agent Log Rule
 - `LEARNING_AND_SHARING.md` is a casual logbook.
