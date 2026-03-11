@@ -52,6 +52,14 @@ Rules for the coding agent in this repository.
 14. **Keep osmo skills minimal and deterministic.**
    - Prefer explicit, contract-driven behavior.
    - Use external tools through clear interfaces, never through hidden coupling.
+15. **Preserve tool identity boundaries.**
+   - `osmo` identity: manage and share skills.
+   - `otto` identity: manage custom-addon lifecycle.
+16. **Future test-runner tool is separate.**
+   - Build test execution as its own TUI/CLI tool that can integrate with osmo and otto interfaces.
+   - Do not collapse responsibilities into osmo or otto.
+17. **Do not modify sibling repos from osmo sessions.**
+   - Never edit code in `../erp/` from this repository session.
 
 ## Agent Log Rule
 - `LEARNING_AND_SHARING.md` is a casual logbook.
