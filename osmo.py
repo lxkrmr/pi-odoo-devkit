@@ -196,6 +196,15 @@ def resolve_runtime_project_root() -> Path:
     )
 
 
+def resolve_project_root(project_repo_path: Path | None) -> Path:
+    if project_repo_path is None:
+        return resolve_runtime_project_root()
+
+    project_dir = project_repo_path.expanduser().resolve()
+    check_project_repo(project_dir)
+    return project_dir
+
+
 def preflight_checks() -> list[str]:
     rows = []
     for tool, required in [
@@ -1306,6 +1315,13 @@ OUTPUT_OPTION = click.option(
     help="Output mode.",
 )
 
+PROJECT_OPTION = click.option(
+    "--project",
+    "project_repo_path",
+    type=click.Path(path_type=Path),
+    help="Explicit Odoo project repo path (overrides cwd auto-detection).",
+)
+
 
 @click.group(context_settings={"help_option_names": ["-h", "--help"]})
 def cli() -> None:
@@ -1994,9 +2010,10 @@ def reset_project_path(dry_run: bool, describe: bool, output_mode: str) -> None:
 
 
 @cli.command()
+@PROJECT_OPTION
 @click.option("--describe", is_flag=True, help="Describe command contract")
 @OUTPUT_OPTION
-def components(describe: bool, output_mode: str) -> None:
+def components(project_repo_path: Path | None, describe: bool, output_mode: str) -> None:
     """Show available/enabled skills from current project."""
     command = "components"
     if _maybe_describe(command, describe, output_mode):
@@ -2004,7 +2021,7 @@ def components(describe: bool, output_mode: str) -> None:
 
     try:
         root = devkit_root()
-        project = resolve_runtime_project_root()
+        project = resolve_project_root(project_repo_path)
         skills = discover_skills(root)
         manifest = load_skill_manifest(root)
 
@@ -2086,10 +2103,11 @@ def components(describe: bool, output_mode: str) -> None:
 
 @cli.command("enable-skill")
 @click.argument("name")
+@PROJECT_OPTION
 @click.option("--dry-run", is_flag=True, help="Validate skill enable without writing symlink")
 @click.option("--describe", is_flag=True, help="Describe command contract")
 @OUTPUT_OPTION
-def enable_skill(name: str, dry_run: bool, describe: bool, output_mode: str) -> None:
+def enable_skill(name: str, project_repo_path: Path | None, dry_run: bool, describe: bool, output_mode: str) -> None:
     """Enable one skill in current project."""
     command = "enable-skill"
     if _maybe_describe(command, describe, output_mode):
@@ -2097,7 +2115,7 @@ def enable_skill(name: str, dry_run: bool, describe: bool, output_mode: str) -> 
 
     try:
         root = devkit_root()
-        project = resolve_runtime_project_root()
+        project = resolve_project_root(project_repo_path)
         src = root / "skills" / name
         marker = src / "SKILL.md"
         dst = project / ".pi" / "skills" / "shared-osmo" / name
@@ -2140,17 +2158,18 @@ def enable_skill(name: str, dry_run: bool, describe: bool, output_mode: str) -> 
 
 @cli.command("disable-skill")
 @click.argument("name")
+@PROJECT_OPTION
 @click.option("--dry-run", is_flag=True, help="Validate skill disable without removing symlink")
 @click.option("--describe", is_flag=True, help="Describe command contract")
 @OUTPUT_OPTION
-def disable_skill(name: str, dry_run: bool, describe: bool, output_mode: str) -> None:
+def disable_skill(name: str, project_repo_path: Path | None, dry_run: bool, describe: bool, output_mode: str) -> None:
     """Disable one skill in current project."""
     command = "disable-skill"
     if _maybe_describe(command, describe, output_mode):
         return
 
     try:
-        project = resolve_runtime_project_root()
+        project = resolve_project_root(project_repo_path)
         dst = project / ".pi" / "skills" / "shared-osmo" / name
 
         if dry_run:
@@ -2213,19 +2232,21 @@ def new_skill(name: str) -> None:
 
 
 @cli.command()
+@PROJECT_OPTION
 @click.argument("services", nargs=-1)
-def up(services: tuple[str, ...]) -> None:
+def up(project_repo_path: Path | None, services: tuple[str, ...]) -> None:
     """Start docker services (docker compose up -d)."""
-    project = resolve_runtime_project_root()
+    project = resolve_project_root(project_repo_path)
     code = run(["docker", "compose", "up", "-d", *services], cwd=project)
     raise SystemExit(code)
 
 
 @cli.command(context_settings={"ignore_unknown_options": True, "allow_extra_args": True})
+@PROJECT_OPTION
 @click.pass_context
-def db(ctx: click.Context) -> None:
+def db(ctx: click.Context, project_repo_path: Path | None) -> None:
     """Open psql using project DB config."""
-    project = resolve_runtime_project_root()
+    project = resolve_project_root(project_repo_path)
     env = os.environ.copy()
     env.update(load_pg_env(project))
     args = ctx.args
@@ -2254,10 +2275,11 @@ def db(ctx: click.Context) -> None:
 
 
 @cli.command()
+@PROJECT_OPTION
 @click.argument("db_name", required=False)
-def shell(db_name: str | None) -> None:
+def shell(project_repo_path: Path | None, db_name: str | None) -> None:
     """Open Odoo shell (--no-http)."""
-    project = resolve_runtime_project_root()
+    project = resolve_project_root(project_repo_path)
     env = load_pg_env(project)
     db = db_name or os.environ.get("DATABASE") or env["PGDATABASE"]
     code = run(["docker", "compose", "exec", "odoo", "odoo", "shell", "--no-http", "-d", db], cwd=project)
@@ -2265,19 +2287,21 @@ def shell(db_name: str | None) -> None:
 
 
 @cli.command(context_settings={"ignore_unknown_options": True, "allow_extra_args": True})
+@PROJECT_OPTION
 @click.pass_context
-def test(ctx: click.Context) -> None:
+def test(ctx: click.Context, project_repo_path: Path | None) -> None:
     """Run project test wrapper."""
-    project = resolve_runtime_project_root()
+    project = resolve_project_root(project_repo_path)
     code = run(["./run-tests.sh", *ctx.args], cwd=project)
     raise SystemExit(code)
 
 
 @cli.command(context_settings={"ignore_unknown_options": True, "allow_extra_args": True})
+@PROJECT_OPTION
 @click.pass_context
-def lint(ctx: click.Context) -> None:
+def lint(ctx: click.Context, project_repo_path: Path | None) -> None:
     """Run pre-commit wrapper."""
-    project = resolve_runtime_project_root()
+    project = resolve_project_root(project_repo_path)
     args = ctx.args or ["run", "--all-files"]
     code = run(["pre-commit", *args], cwd=project)
     raise SystemExit(code)
