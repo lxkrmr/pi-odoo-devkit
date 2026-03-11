@@ -48,6 +48,7 @@ for item in details:
       assert "nargs" in p
     else:
       raise AssertionError(f"unknown param kind: {p['kind']}")' "$OUT"
+  "$PY" -c 'import json,sys; d=json.load(open(sys.argv[1])); details={x["name"]:x for x in d["data"]["details"]}; comp_opts={opt for p in details["components"]["params"] if p["kind"]=="option" for opt in p.get("opts", [])}; assert "--project" in comp_opts' "$OUT"
 }
 
 test_validation_errors() {
@@ -81,11 +82,18 @@ YAML
 
 test_components_contract_fields() {
   echo "[contract] components reason codes"
-  (
-    cd "$TMP_PROJECT"
-    "$PY" "$CLI" components --output json >"$OUT"
-  )
+  "$PY" "$CLI" components --project "$TMP_PROJECT" --output json >"$OUT"
   "$PY" -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["ok"]; skills=d["data"]["skills"]; assert isinstance(skills,list) and skills; required={"name","enabled","available","reason","reason_code","requirement_failures","description"}; assert required.issubset(skills[0].keys())' "$OUT"
+}
+
+
+test_project_option_runtime_commands() {
+  echo "[contract] runtime commands support --project"
+  "$PY" "$CLI" enable-skill dev-workbench --project "$TMP_PROJECT" --dry-run --output json >"$OUT"
+  "$PY" -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["ok"]; assert d["command"]=="enable-skill"; assert d["data"]["dry_run"] is True' "$OUT"
+
+  "$PY" "$CLI" disable-skill dev-workbench --project "$TMP_PROJECT" --dry-run --output json >"$OUT"
+  "$PY" -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["ok"]; assert d["command"]=="disable-skill"; assert d["data"]["dry_run"] is True' "$OUT"
 }
 
 test_doctor_structured_contract() {
@@ -112,6 +120,7 @@ main() {
   test_validation_errors
   test_cleanup_dry_run_no_mutation
   test_components_contract_fields
+  test_project_option_runtime_commands
   test_doctor_structured_contract
   echo "[contract] done"
 }
