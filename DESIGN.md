@@ -37,6 +37,8 @@ Rationale:
 - Doctor should return actionable recommendations
 
 ### Contract Scope Boundary
+Contract v1 reference: `docs/cli-contract.md`
+
 Automation contract commands:
 - `wizard`, `doctor`, `cleanup`, `components`, `enable-skill`, `disable-skill`, `reset-project-path`
 

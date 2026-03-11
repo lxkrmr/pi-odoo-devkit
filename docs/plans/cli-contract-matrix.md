@@ -3,6 +3,8 @@
 Date: 2026-03-11
 Status: active
 
+Reference spec: `docs/cli-contract.md` (v1)
+
 ## Scope
 Automation-relevant commands should expose deterministic behavior:
 - `--output json`
