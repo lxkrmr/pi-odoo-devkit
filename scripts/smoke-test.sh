@@ -94,4 +94,7 @@ echo "[smoke] reset-project-path dry-run json"
 echo "[smoke] targeted cli contract tests"
 "$ROOT/scripts/test-cli-contracts.sh"
 
+echo "[smoke] golden json snapshots"
+"$ROOT/scripts/test-cli-golden.sh"
+
 echo "[smoke] done"

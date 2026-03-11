@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "command": "wizard",
+  "data": {
+    "project": "__string__",
+    "dry_run": true,
+    "preflight": "__array__",
+    "selected_skills": "__array__",
+    "skill_changes": {
+      "enable": "__array__",
+      "disable": "__array__",
+      "unchanged": "__array__"
+    },
+    "options": {
+      "setup_env": true,
+      "install_browser_tools": "__bool__",
+      "add_local_exclude": false
+    }
+  }
+}

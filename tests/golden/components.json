@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "command": "components",
+  "data": {
+    "project": "__string__",
+    "skill_manager_root": "__string__",
+    "skills": "__array__"
+  }
+}

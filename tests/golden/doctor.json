@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "command": "doctor",
+  "data": {
+    "skill_manager_root": "__string__",
+    "project": "__string__",
+    "fail_count": "__number__",
+    "warn_count": "__number__",
+    "checks": "__array__",
+    "checks_structured": "__array__",
+    "recommendations": "__array__",
+    "recommendations_structured": "__array__",
+    "agent_guidance": {
+      "status": "__string__",
+      "summary": "__string__",
+      "mirror_to_user": "__string__"
+    }
+  }
+}
