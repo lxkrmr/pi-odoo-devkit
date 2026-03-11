@@ -1314,6 +1314,8 @@ def help_cmd(output_mode: str) -> None:
         )
 
     data = {
+        "contract_version": "v1",
+        "contract_spec": "docs/cli-contract.md",
         "commands": commands,
         "automation_commands": sorted(COMMAND_SPECS.keys()),
         "non_contract_commands": NON_CONTRACT_COMMANDS,
